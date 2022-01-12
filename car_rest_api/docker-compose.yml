@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  car_rest_api:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes: [ ".:/app" ]
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    links:
+      - db:db
+    networks:
+      app_net:
+        ipv4_address: ${APP_IPV4_ADDRESS}
+  db:
+    container_name: database
+    image: postgres
+    restart: always
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    networks:
+      app_net:
+        ipv4_address: ${DB_IPV4_ADDRESS}
+
+  pgadmin:
+    container_name: pgadmin4_panel
+    image: dpage/pgadmin4
+    restart: always
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "5050:80"
+    networks:
+      app_net:
+        ipv4_address: ${PGADMIN_IPV4_ADDRESS}
+
+networks:
+  app_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: ${SUBNET_IPV4_ADDRESS}
+          gateway: ${GATEWAY_IPV4_ADDRESS}
