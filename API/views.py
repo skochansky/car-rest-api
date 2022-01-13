@@ -3,8 +3,8 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import Car
-from .service import check_in_car_exist
+from .models import Car, CarRating
+from .service import check_if_car_exist
 import json
 import requests
 
@@ -33,7 +33,7 @@ class CarView(View):
         try:
             request = requests.get(f"https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMake/{make}?format=json")
             request.raise_for_status()
-            result = check_in_car_exist(make, model, request)
+            result = check_if_car_exist(make, model, request)
         except requests.exceptions.HTTPError as err:
             result = {'error': str(err)}
 
@@ -51,4 +51,24 @@ class CarDeleteView(View):
             result = {'error': str(err)}
 
         return HttpResponse(json.dumps(result), content_type='application/json', charset='UTF-8')
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CarRatingView(View):
+    def post(self, request):
+        post_body = json.loads(request.body)
+        car_id = post_body.get('car_id')
+        rating = post_body.get('rating')
+        rate = CarRating.objects.create(car_id=car_id, rating=rating)
+        rate.save()
+        result = {'message': 'Car rating added'}
+        return HttpResponse(json.dumps(result), content_type='application/json',
+                            charset='UTF-8')
+
+
+
+
+
+
+
 
