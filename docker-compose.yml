@@ -2,19 +2,19 @@ version: "3.9"
 
 services:
   car_rest_api:
-    build: car_rest_api
+    build: .
     command: python manage.py runserver 0.0.0.0:8000
     volumes: [ ".:/app" ]
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      - postgres
     links:
-      - db:db
+      - postgres:postgres
     networks:
       app_net:
         ipv4_address: ${APP_IPV4_ADDRESS}
-  db:
+  postgres:
     container_name: database
     image: postgres
     restart: always

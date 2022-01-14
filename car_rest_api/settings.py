@@ -1,13 +1,11 @@
 # PSl
 from os import getenv, path
+import os
 from pathlib import Path
-
-
 
 # Third part
 from dotenv import load_dotenv
 from django.core.management.utils import get_random_secret_key
-
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -34,7 +32,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
     # Own
     'API',
 
@@ -85,9 +82,6 @@ DATABASES = {
   }
 }
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/3.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
