@@ -2,19 +2,19 @@ version: "3.9"
 
 services:
   car_rest_api:
-    build: car_rest_api
+    build: .
     command: python manage.py runserver 0.0.0.0:8000
     volumes: [ ".:/app" ]
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      - postgres
     links:
-      - db:db
+      - postgres:postgres
     networks:
       app_net:
         ipv4_address: ${APP_IPV4_ADDRESS}
-  db:
+  postgres:
     container_name: database
     image: postgres
     restart: always
@@ -29,21 +29,6 @@ services:
     networks:
       app_net:
         ipv4_address: ${DB_IPV4_ADDRESS}
-
-  pgadmin:
-    container_name: pgadmin4_panel
-    image: dpage/pgadmin4
-    restart: always
-    volumes:
-      - ./data/db:/var/lib/postgresql/data
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-    ports:
-      - "5050:80"
-    networks:
-      app_net:
-        ipv4_address: ${PGADMIN_IPV4_ADDRESS}
 
 networks:
   app_net:
